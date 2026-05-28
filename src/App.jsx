@@ -62,7 +62,7 @@ const WA=<svg width="12" height="12" viewBox="0 0 24 24" fill="#25D366"><path d=
 function useAuth(){
 const[user,setUser]=useState(null);const[profile,setProfile]=useState(null);const[loading,setLoading]=useState(true);
 useEffect(()=>{supabase.auth.getSession().then(({data:{session}})=>{setUser(session?.user||null);if(session?.user)loadProfile(session.user.id);else setLoading(false);});
-const{data:{subscription}}=supabase.auth.onAuthStateChange((_,session)=>{setUser(session?.user||null);if(session?.user)loadProfile(session.user.id);else{setProfile(null);setLoading(false);}});
+const{data:{subscription}}=supabase.auth.onAuthStateChange((_,session)=>{setUser(session?.user||null);if(session?.user){setLoading(true);loadProfile(session.user.id);}else{setProfile(null);setLoading(false);}});
 return()=>subscription.unsubscribe();},[]);
 const loadProfile=async(uid)=>{const{data}=await supabase.from("crm_usuarios").select("*,crm_clientes(nome,slug,dominio)").eq("user_id",uid).limit(1).single();setProfile(data);setLoading(false);};
 const login=async(email,pw)=>{const{error}=await supabase.auth.signInWithPassword({email,password:pw});return error;};
@@ -85,7 +85,7 @@ function useAdsSpend(dateFrom,dateTo,cid){const[d,sd]=useState([]);const[l,sl]=u
 // ===== UI =====
 function LoginPage({onLogin}){const[email,setEmail]=useState("");const[pw,setPw]=useState("");const[err,setErr]=useState(null);const[loading,setLoading]=useState(false);
 const handle=async(e)=>{e.preventDefault();setLoading(true);setErr(null);const error=await onLogin(email,pw);if(error)setErr(error.message==="Invalid login credentials"?"Email ou senha incorretos":error.message);setLoading(false);};
-return<div style={{minHeight:"100vh",background:BG,display:"flex",alignItems:"center",justifyContent:"center",fontFamily:"'DM Sans',system-ui,sans-serif"}}><style>{THEME_CSS}</style><div data-theme="dark" style={{width:"100%",maxWidth:380,padding:32}}>
+return<div data-theme="dark" style={{minHeight:"100vh",background:BG,display:"flex",alignItems:"center",justifyContent:"center",fontFamily:"'DM Sans',system-ui,sans-serif"}}><style>{THEME_CSS}{`@keyframes spin{to{transform:rotate(360deg)}}`}</style><div style={{width:"100%",maxWidth:380,padding:32}}>
 <div style={{textAlign:"center",marginBottom:32}}><div style={{display:"inline-flex",alignItems:"center",gap:2}}><span style={{fontWeight:800,fontSize:32,color:TEXT1}}>HT</span><span style={{fontWeight:800,fontSize:32,background:`linear-gradient(135deg,${GOLD_LIGHT},${GOLD},${GOLD_DIM})`,WebkitBackgroundClip:"text",WebkitTextFillColor:"transparent"}}>X</span></div><p style={{fontSize:11,color:TEXT3,marginTop:4,letterSpacing:"0.1em",textTransform:"uppercase"}}>CRM High Ticket</p></div>
 <form onSubmit={handle}><div style={{marginBottom:12}}><label style={{fontSize:9,color:TEXT3,textTransform:"uppercase",display:"block",marginBottom:4}}>Email</label><input type="email" value={email} onChange={e=>setEmail(e.target.value)} required style={{width:"100%",padding:"10px 14px",borderRadius:8,border:`1px solid ${BORDER}`,background:BG3,color:TEXT1,fontSize:13,outline:"none",boxSizing:"border-box"}}/></div>
 <div style={{marginBottom:16}}><label style={{fontSize:9,color:TEXT3,textTransform:"uppercase",display:"block",marginBottom:4}}>Senha</label><input type="password" value={pw} onChange={e=>setPw(e.target.value)} required style={{width:"100%",padding:"10px 14px",borderRadius:8,border:`1px solid ${BORDER}`,background:BG3,color:TEXT1,fontSize:13,outline:"none",boxSizing:"border-box"}}/></div>
@@ -266,7 +266,7 @@ const toggleTheme=()=>{const next=theme==="dark"?"light":"dark";sTheme(next);try
 const today=new Date();const thirtyAgo=new Date(today.getFullYear(),today.getMonth(),today.getDate()-30);
 const[dateFrom,sDateFrom]=useState(thirtyAgo.toISOString().split("T")[0]);const[dateTo,sDateTo]=useState(today.toISOString().split("T")[0]);const[showDates,sShowDates]=useState(false);
 const{totals:adsTotals}=useAdsSpend(dateFrom,dateTo,cid);
-if(auth.loading)return<div data-theme="dark" style={{minHeight:"100vh",background:BG,display:"flex",alignItems:"center",justifyContent:"center"}}><style>{THEME_CSS}</style><Loader2 size={28} style={{color:GOLD_HEX,animation:"spin 1s linear infinite"}}/></div>;
+if(auth.loading||(!auth.profile&&auth.user))return<div data-theme="dark" style={{minHeight:"100vh",background:"#09090B",display:"flex",alignItems:"center",justifyContent:"center"}}><style>{THEME_CSS}{`@keyframes spin{to{transform:rotate(360deg)}}`}</style><Loader2 size={28} style={{color:GOLD_HEX,animation:"spin 1s linear infinite"}}/></div>;
 if(!auth.user)return<LoginPage onLogin={auth.login}/>;
 const filteredLeads=useMemo(()=>{const from=new Date(dateFrom+"T00:00:00");const to=new Date(dateTo+"T23:59:59");return leads.filter(l=>{const d=new Date(l.created_at);return d>=from&&d<=to;});},[leads,dateFrom,dateTo]);
 const vendas=filteredLeads.filter(l=>l.stage==="fechado");
