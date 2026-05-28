@@ -266,9 +266,9 @@ const toggleTheme=()=>{const next=theme==="dark"?"light":"dark";sTheme(next);try
 const today=new Date();const thirtyAgo=new Date(today.getFullYear(),today.getMonth(),today.getDate()-30);
 const[dateFrom,sDateFrom]=useState(thirtyAgo.toISOString().split("T")[0]);const[dateTo,sDateTo]=useState(today.toISOString().split("T")[0]);const[showDates,sShowDates]=useState(false);
 const{totals:adsTotals}=useAdsSpend(dateFrom,dateTo,cid);
+const filteredLeads=useMemo(()=>{const from=new Date(dateFrom+"T00:00:00");const to=new Date(dateTo+"T23:59:59");return leads.filter(l=>{const d=new Date(l.created_at);return d>=from&&d<=to;});},[leads,dateFrom,dateTo]);
 if(auth.loading||(!auth.profile&&auth.user))return<div data-theme="dark" style={{minHeight:"100vh",background:"#09090B",display:"flex",alignItems:"center",justifyContent:"center"}}><style>{THEME_CSS}{`@keyframes spin{to{transform:rotate(360deg)}}`}</style><Loader2 size={28} style={{color:GOLD_HEX,animation:"spin 1s linear infinite"}}/></div>;
 if(!auth.user)return<LoginPage onLogin={auth.login}/>;
-const filteredLeads=useMemo(()=>{const from=new Date(dateFrom+"T00:00:00");const to=new Date(dateTo+"T23:59:59");return leads.filter(l=>{const d=new Date(l.created_at);return d>=from&&d<=to;});},[leads,dateFrom,dateTo]);
 const vendas=filteredLeads.filter(l=>l.stage==="fechado");
 const presets=[{l:"7 dias",d:7},{l:"15 dias",d:15},{l:"30 dias",d:30},{l:"60 dias",d:60},{l:"90 dias",d:90}];
 const setPreset=d=>{const t=new Date();const f=new Date(t.getFullYear(),t.getMonth(),t.getDate()-d);sDateFrom(f.toISOString().split("T")[0]);sDateTo(t.toISOString().split("T")[0]);};
