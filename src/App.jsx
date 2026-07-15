@@ -387,7 +387,7 @@ breadcrumb.push({label:"Campanhas",action:()=>{sDrillCamp(null);sDrillAdset(null
 if(drillCamp)breadcrumb.push({label:drillCamp,action:()=>{sDrillAdset(null);}});
 if(drillAdset)breadcrumb.push({label:drillAdset,action:null});
 
-const normK=s=>String(s||"—").normalize("NFKC").replace(/[​-‍﻿]/g,"").toLowerCase().replace(/[–—−]/g,"-").replace(/\s+/g," ").trim();
+const normK=s=>String(s||"—").normalize("NFKC").replace(/[\u{1F000}-\u{1FAFF}\u{2600}-\u{27BF}\u{2B00}-\u{2BFF}\u{FE0F}]/gu,"").replace(/[​-‍﻿]/g,"").toLowerCase().replace(/[–—−]/g,"-").replace(/\s+/g," ").trim();
 function aggDrill(adsData,leadsData){const m={};const mqlT=config?.mql_threshold||0;
 const utmField=!drillCamp?"utm_campaign":!drillAdset?"utm_term":"utm_content";
 const mk=(k,name)=>{if(!m[k])m[k]={name:name||"—",leads:0,mql:0,sql:0,qualificados:0,agendados:0,vendas:0,receita:0,cash:0,spend:0,impressions:0,clicks:0,leads_meta:0};return m[k];};
