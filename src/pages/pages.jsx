@@ -1,4 +1,5 @@
 import { useState, useMemo } from "react";
+import { createPortal } from "react-dom";
 import { Users, UserCheck, Calendar, DollarSign, TrendingUp, Target, Phone, Settings, X, Check, AlertTriangle, Zap, Plus, Trash2, Eye, EyeOff, Award, Loader2, Search, ArrowRightLeft, Sun, Moon } from "lucide-react";
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, Cell, CartesianGrid, Area, AreaChart } from "recharts";
 import { supabase } from "../lib/supabase";
@@ -27,7 +28,7 @@ const stages=pipeHook.stages;const pipelines=pipeHook.pipelines;const act=pipeli
 const move=(i,dir)=>{const j=i+dir;if(j<0||j>=stages.length)return;pipeHook.reorderStages(i,j);};
 const IB={width:28,height:28,borderRadius:6,border:`1px solid ${BORDER}`,background:"transparent",color:TEXT2,cursor:"pointer",fontSize:12,display:"flex",alignItems:"center",justifyContent:"center",flexShrink:0};
 const SB={padding:"5px 10px",borderRadius:6,border:`1px solid ${BORDER}`,background:BG2,color:TEXT2,fontSize:10.5,fontWeight:600,cursor:"pointer"};
-return<div style={{position:"fixed",inset:0,zIndex:120,display:"flex",alignItems:"center",justifyContent:"center",padding:16,background:"var(--overlay)",backdropFilter:"blur(8px)",WebkitBackdropFilter:"blur(8px)"}} onClick={onClose}>
+return createPortal(<div style={{position:"fixed",inset:0,zIndex:120,display:"flex",alignItems:"center",justifyContent:"center",padding:16,background:"var(--overlay)",backdropFilter:"blur(8px)",WebkitBackdropFilter:"blur(8px)"}} onClick={onClose}>
 <div onClick={e=>e.stopPropagation()} style={{width:"100%",maxWidth:820,maxHeight:"85vh",display:"flex",flexDirection:"column",background:BG2,border:`1px solid ${BORDER2}`,borderRadius:16,overflow:"hidden",boxShadow:"0 12px 48px rgba(0,0,0,0.3)",animation:`modalIn 250ms ${EASE}`}}>
 <div className="flex items-center justify-between" style={{padding:"16px 20px",borderBottom:`1px solid ${BORDER}`}}><h3 style={{fontSize:15,fontWeight:700,color:TEXT1,margin:0}}>Gerenciar Pipelines</h3><button onClick={onClose} style={{padding:8,borderRadius:8,border:"none",background:"var(--bg-hover)",cursor:"pointer",color:TEXT2}}><X size={16}/></button></div>
 <div style={{display:"grid",gridTemplateColumns:"250px 1fr",flex:1,minHeight:0}}>
@@ -59,7 +60,7 @@ return<div style={{position:"fixed",inset:0,zIndex:120,display:"flex",alignItems
 <button onClick={()=>{if(!newLabel.trim())return;pipeHook.addStage(activePipelineId,newLabel.trim(),newColor);sNewLabel("");}} style={{padding:"8px 14px",borderRadius:6,border:"none",background:GOLD_BG2,color:GOLD,fontSize:11,fontWeight:700,cursor:"pointer",flexShrink:0}}>+ Adicionar</button>
 </div>
 </div>
-</div></div></div>;}
+</div></div></div>,document.body);}
 
 function CRMPage({leads,onLeadClick,onUpdate,equipe,onAdd,stages,pipelines,activePipelineId,onSelectPipeline,pipeHook,showPrompt,showConfirm,showToast,config,qualStages,etiquetas,isClinica,unread}){const mqlThreshold=config?.mql_threshold||0;const[search,sSearch]=useState("");const[filterSdr,sFilter]=useState("");const[filterTag,sFilterTag]=useState("");const[showAdd,sShowAdd]=useState(false);const[dragOver,sDragOver]=useState(null);const[showPipeEdit,sShowPipeEdit]=useState(false);
 const filtered=useMemo(()=>{let f=leads;if(activePipelineId)f=f.filter(l=>l.pipeline_id?l.pipeline_id===activePipelineId:activePipelineId===pipelines?.[0]?.id);if(search){const s=search.toLowerCase();f=f.filter(l=>(l.nome||"").toLowerCase().includes(s)||(l.telefone||"").includes(s)||(l.instagram||"").toLowerCase().includes(s)||(l.utm_campaign||"").toLowerCase().includes(s));}if(filterSdr)f=f.filter(l=>l.sdr_nome===filterSdr);if(filterTag)f=f.filter(l=>(l.etiqueta_ids||[]).includes(filterTag));return f;},[leads,search,filterSdr,filterTag,activePipelineId,pipelines]);
