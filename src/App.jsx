@@ -71,7 +71,7 @@ const login=async(email,pw)=>{const{error}=await supabase.auth.signInWithPasswor
 const logout=async()=>{await supabase.auth.signOut();setUser(null);setProfile(null);};
 return{user,profile,loading,login,logout,clienteId:profile?.cliente_id};}
 
-function useLeads(cid){const[ld,setLd]=useState([]);const[lo,setLo]=useState(true);const f=useCallback(async()=>{if(!cid)return;setLo(true);const{data}=await supabase.from("crm_leads").select("*").order("created_at",{ascending:false});if(data)setLd(data);setLo(false);},[cid]);useEffect(()=>{f();},[f]);
+function useLeads(cid){const[ld,setLd]=useState([]);const[lo,setLo]=useState(true);const f=useCallback(async(silent=false)=>{if(!cid)return;if(!silent)setLo(true);const{data}=await supabase.from("crm_leads").select("*").order("created_at",{ascending:false});if(data)setLd(data);setLo(false);},[cid]);useEffect(()=>{f();},[f]);
 const up=async(id,u)=>{const{error}=await supabase.from("crm_leads").update(u).eq("id",id);if(!error)setLd(p=>p.map(l=>l.id===id?{...l,...u}:l));return!error;};
 const add=async l=>{const{data,error}=await supabase.from("crm_leads").insert({...l,cliente_id:cid}).select();if(!error&&data){setLd(p=>[data[0],...p]);return{lead:data[0],error:null};}return{lead:null,error:error?.message||"Erro ao salvar lead"};};
 const del=async id=>{await supabase.from("crm_leads").delete().eq("id",id);setLd(p=>p.filter(l=>l.id!==id));};
@@ -493,5 +493,5 @@ return<ThemeCtx.Provider value={theme}><div data-theme={theme} className="flex" 
 {page==="config"&&<ConfigPage equipe={equipe} eqLoading={eql} addMember={addMember} removeMember={removeMember} toggleActive={toggleActive} updateDist={updateDist} config={config} theme={theme} toggleTheme={toggleTheme} pipeHook={pipeHook}/>}
 </div>
 </main>
-{sel&&<LeadModal lead={sel} onClose={()=>{sSel(null);refetch();}} onUpdate={updateLead} onDelete={deleteLead} equipe={equipe} templates={templates} clienteId={cid} stages={STAGES} showConfirm={showConfirm} showToast={showToast} audioLib={audioLib} funisHook={funisHook}/>}
+{sel&&<LeadModal lead={sel} onClose={()=>{sSel(null);refetch(true);}} onUpdate={updateLead} onDelete={deleteLead} equipe={equipe} templates={templates} clienteId={cid} stages={STAGES} showConfirm={showConfirm} showToast={showToast} audioLib={audioLib} funisHook={funisHook}/>}
 <CrmDialog dialog={dialog} setDialog={setDialog}/><Toast toasts={toasts}/></div></ThemeCtx.Provider>;}
