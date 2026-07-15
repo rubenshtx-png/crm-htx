@@ -1,7 +1,7 @@
 import { useState, useEffect, useMemo, useCallback, createContext, useContext } from "react";
 import { flushSync } from "react-dom";
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, PieChart, Pie, Cell, CartesianGrid, Area, AreaChart } from "recharts";
-import { Users, UserCheck, Calendar, DollarSign, TrendingUp, Target, Phone, Filter, LayoutDashboard, Kanban, BarChart3, Radio, Settings, X, Check, AlertTriangle, Zap, Plus, Trash2, Eye, EyeOff, Award, Loader2, RefreshCw, Search, MessageSquare, Clock, Copy, ArrowRightLeft, Sun, Moon, Mic, GripVertical, HelpCircle, Tag } from "lucide-react";
+import { Users, UserCheck, Calendar, DollarSign, TrendingUp, Target, Phone, Filter, LayoutDashboard, Kanban, BarChart3, Radio, Settings, X, Check, AlertTriangle, Zap, Plus, Trash2, Eye, EyeOff, Award, Loader2, RefreshCw, Search, MessageSquare, Clock, Copy, ArrowRightLeft, Sun, Moon, Mic, HelpCircle } from "lucide-react";
 import { supabase } from "./lib/supabase";
 
 const GOLD="var(--gold)",GOLD_LIGHT="var(--gold-light)",GOLD_DIM="var(--gold-dim)",GOLD_BG="var(--gold-bg)",GOLD_BG2="var(--gold-bg2)";
@@ -364,7 +364,7 @@ return<div style={{position:"fixed",inset:0,zIndex:120,display:"flex",alignItems
 </div>
 </div></div></div>;}
 
-function CRMPage({leads,onLeadClick,onUpdate,equipe,onAdd,stages,pipelines,activePipelineId,onSelectPipeline,pipeHook,showPrompt,showConfirm,showToast,config,qualStages,etiquetas,isClinica}){const mqlThreshold=config?.mql_threshold||0;const[search,sSearch]=useState("");const[filterSdr,sFilter]=useState("");const[filterTag,sFilterTag]=useState("");const[showAdd,sShowAdd]=useState(false);const[dragOver,sDragOver]=useState(null);const[showPipeEdit,sShowPipeEdit]=useState(false);const[newStageLabel,sNewStageLabel]=useState("");const[newStageColor,sNewStageColor]=useState("#60A5FA");const[newPipeName,sNewPipeName]=useState("");const[dragStageIdx,sDragStageIdx]=useState(null);const[dragOverIdx,sDragOverIdx]=useState(null);const STAGE_COLORS=["#14B8A6","#60A5FA","#38BDF8","#34D399","#A78BFA","#818CF8","#FBBF24","#FB923C","#22D3EE","#94A3B8","#4ADE80","#F87171","#F472B6","#E879F9"];
+function CRMPage({leads,onLeadClick,onUpdate,equipe,onAdd,stages,pipelines,activePipelineId,onSelectPipeline,pipeHook,showPrompt,showConfirm,showToast,config,qualStages,etiquetas,isClinica}){const mqlThreshold=config?.mql_threshold||0;const[search,sSearch]=useState("");const[filterSdr,sFilter]=useState("");const[filterTag,sFilterTag]=useState("");const[showAdd,sShowAdd]=useState(false);const[dragOver,sDragOver]=useState(null);const[showPipeEdit,sShowPipeEdit]=useState(false);
 const filtered=useMemo(()=>{let f=leads;if(activePipelineId)f=f.filter(l=>l.pipeline_id?l.pipeline_id===activePipelineId:activePipelineId===pipelines?.[0]?.id);if(search){const s=search.toLowerCase();f=f.filter(l=>(l.nome||"").toLowerCase().includes(s)||(l.telefone||"").includes(s)||(l.instagram||"").toLowerCase().includes(s)||(l.utm_campaign||"").toLowerCase().includes(s));}if(filterSdr)f=f.filter(l=>l.sdr_nome===filterSdr);if(filterTag)f=f.filter(l=>(l.etiqueta_ids||[]).includes(filterTag));return f;},[leads,search,filterSdr,filterTag,activePipelineId,pipelines]);
 const grouped=useMemo(()=>{const g={};stages.forEach(s=>{g[s.key]=[];});const firstKey=stages[0]?.key;filtered.forEach(l=>{if(g[l.stage])g[l.stage].push(l);else if(firstKey)g[firstKey].push(l);});return g;},[filtered,stages]);
 const sdrs=[...new Set(leads.map(l=>l.sdr_nome).filter(Boolean))];
