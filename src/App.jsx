@@ -55,6 +55,11 @@ return<ThemeCtx.Provider value={theme}><div data-theme={theme} className="flex" 
 .slide-in{animation:slideIn 250ms ${EASE} both;}
 *{scrollbar-width:thin;scrollbar-color:rgba(113,132,127,0.15) transparent;}
 *::-webkit-scrollbar{width:6px;}*::-webkit-scrollbar-track{background:transparent;}*::-webkit-scrollbar-thumb{background:rgba(113,132,127,0.15);border-radius:3px;}*::-webkit-scrollbar-thumb:hover{background:rgba(113,132,127,0.25);}
+.kb-proxy{scrollbar-width:auto;scrollbar-color:rgba(13,148,136,0.55) var(--bg3);}
+.kb-proxy::-webkit-scrollbar{height:12px;}
+.kb-proxy::-webkit-scrollbar-track{background:var(--bg3);border-radius:6px;}
+.kb-proxy::-webkit-scrollbar-thumb{background:rgba(13,148,136,0.55);border-radius:6px;}
+.kb-proxy::-webkit-scrollbar-thumb:hover{background:rgba(13,148,136,0.85);}
 .bottomnav{display:none;}
 @media(max-width:767px){
 .bottomnav{display:flex;}
