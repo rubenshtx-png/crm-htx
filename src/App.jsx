@@ -1,7 +1,7 @@
 import { useState, useEffect, useMemo, useCallback, createContext, useContext } from "react";
 import { flushSync } from "react-dom";
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, PieChart, Pie, Cell, CartesianGrid, Area, AreaChart } from "recharts";
-import { Users, UserCheck, Calendar, DollarSign, TrendingUp, Target, Phone, Filter, LayoutDashboard, Kanban, BarChart3, Radio, Settings, X, Check, AlertTriangle, Zap, Plus, Trash2, Eye, EyeOff, Award, Loader2, RefreshCw, Search, MessageSquare, Clock, Copy, ArrowRightLeft, Sun, Moon, Mic, GripVertical } from "lucide-react";
+import { Users, UserCheck, Calendar, DollarSign, TrendingUp, Target, Phone, Filter, LayoutDashboard, Kanban, BarChart3, Radio, Settings, X, Check, AlertTriangle, Zap, Plus, Trash2, Eye, EyeOff, Award, Loader2, RefreshCw, Search, MessageSquare, Clock, Copy, ArrowRightLeft, Sun, Moon, Mic, GripVertical, HelpCircle, Tag } from "lucide-react";
 import { supabase } from "./lib/supabase";
 
 const GOLD="var(--gold)",GOLD_LIGHT="var(--gold-light)",GOLD_DIM="var(--gold-dim)",GOLD_BG="var(--gold-bg)",GOLD_BG2="var(--gold-bg2)";
@@ -56,7 +56,8 @@ const NAV=[
   {key:"analytics",label:"Analytics",icon:BarChart3},
   {key:"tracking",label:"Tracking",icon:Radio},
   {key:"templates",label:"Templates",icon:MessageSquare},
-  {key:"config",label:"Config",icon:Settings}
+  {key:"config",label:"Config",icon:Settings},
+  {key:"ajuda",label:"Ajuda",icon:HelpCircle}
 ];
 
 const fmt=v=>v!=null?v.toLocaleString("pt-BR",{style:"currency",currency:"BRL",minimumFractionDigits:0}):"R$ 0";
@@ -397,6 +398,68 @@ return<div style={{display:"flex",flexDirection:"column",gap:14}}><div className
 {show&&<Card style={{padding:14}}><div style={{display:"grid",gridTemplateColumns:"2fr 1fr",gap:8,marginBottom:8}}><div><label style={{fontSize:9,color:TEXT3,textTransform:"uppercase",display:"block",marginBottom:3}}>Título</label><input value={ti} onChange={e=>sTi(e.target.value)} style={IS}/></div><div><label style={{fontSize:9,color:TEXT3,textTransform:"uppercase",display:"block",marginBottom:3}}>Categoria</label><select value={ca} onChange={e=>sCa(e.target.value)} style={IS}>{Object.entries(cats).map(([k,v])=><option key={k} value={k}>{v}</option>)}</select></div></div><div style={{marginBottom:8}}><label style={{fontSize:9,color:TEXT3,textTransform:"uppercase",display:"block",marginBottom:3}}>Mensagem</label><textarea value={ms} onChange={e=>sMs(e.target.value)} rows={3} style={{...IS,resize:"vertical"}}/></div><div className="flex gap-2"><button onClick={add} style={{padding:"8px 16px",borderRadius:8,border:"none",background:"linear-gradient(135deg,#14B8A6,#0D9488)",color:"var(--btn-text)",fontSize:12,fontWeight:600,cursor:"pointer"}}>Salvar</button><button onClick={()=>sShow(false)} style={{padding:"8px 16px",borderRadius:8,border:`1px solid ${BORDER}`,background:"transparent",color:TEXT3,fontSize:12,cursor:"pointer"}}>Cancelar</button></div></Card>}
 {loading?<Spinner/>:templates.map(t=><Card key={t.id} style={{padding:14}}><div className="flex items-center justify-between" style={{marginBottom:6}}><div className="flex items-center gap-2"><span style={{fontSize:12,fontWeight:500,color:GOLD}}>{t.titulo}</span><span style={{fontSize:8,padding:"2px 6px",borderRadius:8,background:"rgba(255,255,255,0.04)",color:TEXT3}}>{cats[t.categoria]||t.categoria}</span></div><button onClick={()=>removeTemplate(t.id)} style={{padding:5,borderRadius:5,border:"none",background:"rgba(255,255,255,0.04)",cursor:"pointer",color:"#F87171"}}><Trash2 size={11}/></button></div><div style={{fontSize:11,color:TEXT2,lineHeight:1.5}}>{t.mensagem}</div></Card>)}</div>;}
 
+function HStep({n,title,children}){return<Card style={{padding:"18px 20px"}}><div className="flex gap-3"><div style={{width:28,height:28,borderRadius:"50%",background:"linear-gradient(135deg,#14B8A6,#0D9488)",color:"#fff",display:"flex",alignItems:"center",justifyContent:"center",fontSize:13,fontWeight:800,flexShrink:0}}>{n}</div><div style={{flex:1,minWidth:0}}><h3 style={{fontSize:14,fontWeight:700,color:TEXT1,margin:"3px 0 8px"}}>{title}</h3><div style={{fontSize:12.5,color:TEXT2,lineHeight:1.7}}>{children}</div></div></div></Card>;}
+function HMock({children,label}){return<div style={{margin:"10px 0",padding:14,borderRadius:10,background:BG3,border:`1px dashed ${BORDER2}`}}><div className="flex items-center gap-3 flex-wrap">{children}{label&&<span style={{fontSize:11,color:GOLD,fontWeight:700}}>👈 {label}</span>}</div></div>;}
+function HKey({children}){return<span style={{padding:"1px 7px",borderRadius:5,background:"var(--bg-hover)",border:`1px solid ${BORDER}`,fontSize:11.5,fontWeight:600,color:TEXT1}}>{children}</span>;}
+function HelpPage({isClinica}){
+const btnNovoLead=<span style={{display:"inline-flex",alignItems:"center",gap:5,padding:"7px 14px",borderRadius:8,background:GOLD_BG2,color:GOLD,fontSize:11,fontWeight:600}}><Plus size={13}/>Novo lead</span>;
+const btnZap=<span style={{display:"inline-flex",alignItems:"center",gap:5,height:30,padding:"0 12px",borderRadius:15,background:"rgba(20,184,166,0.12)",border:"1px solid rgba(45,212,191,0.35)",color:"#0D9488",fontSize:11,fontWeight:600}}><Zap size={12}/>Áudios & Rápidas</span>;
+const cardMock=<span style={{display:"inline-block",padding:"9px 12px",borderRadius:9,background:BG2,border:`1px solid ${BORDER}`,boxShadow:"0 1px 3px rgba(13,60,55,0.08)",minWidth:150}}><span style={{display:"block",fontSize:12,fontWeight:600,color:TEXT1}}>Maria Souza</span><span style={{display:"block",fontSize:10,color:TEXT3,marginTop:2}}>📞 5511999998888</span></span>;
+const tagMock=<span style={{padding:"4px 12px",borderRadius:12,background:"rgba(37,99,235,0.12)",border:"1px solid rgba(37,99,235,0.4)",color:"#1D4ED8",fontSize:11,fontWeight:700}}>Quer agendar</span>;
+return<div style={{display:"flex",flexDirection:"column",gap:12,maxWidth:860}}>
+<Card style={{padding:"18px 20px",borderColor:"var(--gold-border)"}}><h2 style={{fontSize:16,fontWeight:800,color:TEXT1,margin:0}}>Como usar o CRM {isClinica?"— Guia da Clínica":"— Guia da Mentoria"}</h2><p style={{fontSize:12,color:TEXT3,margin:"6px 0 0",lineHeight:1.6}}>Siga os passos abaixo na ordem. O mais importante de tudo está no passo {isClinica?"4":"4"}: <b style={{color:GOLD}}>mover os leads corretamente no funil</b> — é isso que alimenta o Facebook com os dados certos.</p></Card>
+
+<HStep n={1} title="Conheça as abas do menu lateral">
+<b>Dashboard</b> — resumo do dia: leads, agendamentos, receita.<br/><b>Pipeline</b> — o funil em colunas, onde você trabalha os leads (sua tela principal).<br/><b>Analytics</b> — desempenho por campanha e por atendente.<br/><b>Templates</b> — mensagens prontas para copiar.<br/><b>Config</b> — equipe, WhatsApp, etiquetas e preferências.
+</HStep>
+
+<HStep n={2} title={isClinica?"De onde vêm os leads (e como cadastrar um manualmente)":"Cadastrar um lead manualmente"}>
+{isClinica?<span>Os leads dos anúncios chegam <b>sozinhos</b>: quando a pessoa clica no anúncio do Facebook e manda mensagem no WhatsApp da clínica, o lead aparece automaticamente na coluna <HKey>Novo</HKey> do Pipeline. Para pacientes que chegam por indicação ou telefone, cadastre manualmente:</span>:<span>Os leads do formulário entram sozinhos no Pipeline. Para cadastrar alguém manualmente (indicação, contato direto):</span>}
+<HMock label="clique aqui, no topo do Pipeline">{btnNovoLead}</HMock>
+Primeiro <b>abra o pipeline certo</b> no menu lateral (clique em Pipeline e escolha na lista). Depois clique no botão acima, preencha nome e WhatsApp (Instagram e email são opcionais) e pronto — o lead cai na coluna <HKey>Novo</HKey>.
+</HStep>
+
+<HStep n={3} title="Atender o lead pelo WhatsApp (sem sair do CRM)">
+Clique em qualquer cartão do funil para abrir a ficha do lead:
+<HMock label="clique no cartão">{cardMock}</HMock>
+Dentro da ficha, vá na aba <HKey>Chat</HKey>. Ali você digita mensagens, grava áudio segurando o microfone, e envia mensagens e áudios prontos pelo botão:
+<HMock label="mensagens e áudios prontos">{btnZap}</HMock>
+<b>Responda rápido:</b> cartões com <span style={{color:"#DC2626",fontWeight:700}}>⚠ Sem contato</span> são leads novos há mais de 2h sem atendimento — eles esfriam muito rápido.
+</HStep>
+
+<HStep n={4} title="⭐ Mover o lead no funil — o passo mais importante">
+Arraste o cartão de uma coluna para outra conforme a conversa evolui (segure e solte na coluna nova). Isso não é só organização: <b style={{color:GOLD}}>cada mudança de etapa envia um evento para o Facebook</b> (via Pixel/API de Conversões).<br/><br/>
+O Facebook usa esses eventos para aprender <b>quem vira {isClinica?"paciente":"cliente"} de verdade</b> e mostrar os anúncios para pessoas parecidas. Na prática:<br/>
+• Mover corretamente = anúncios cada vez mais baratos e leads cada vez melhores.<br/>
+• Esquecer de mover (ou mover errado) = o Facebook otimiza para curiosos, e o custo por lead sobe.<br/><br/>
+As etapas que disparam eventos são: <HKey>Qualificado</HKey> → <HKey>{isClinica?"Consulta Agendada":"Reunião Agendada"}</HKey> → <HKey>Fechado</HKey>. <b>Mova no momento em que acontecer de verdade</b> — e leads sem perfil vão para <HKey>Desqualificado</HKey> (isso também ensina o Facebook a evitá-los).
+</HStep>
+
+{isClinica?<HStep n={5} title="Etiquetas — classifique cada lead manualmente">
+Como os leads chegam direto do WhatsApp (sem formulário), quem classifica é a atendente, usando etiquetas:
+<HMock label="exemplo de etiqueta no cartão">{tagMock}</HMock>
+<b>Criar etiquetas:</b> vá em <HKey>Config</HKey> → seção <b>Etiquetas de Lead</b> → escolha uma cor, digite o nome (ex.: "Quer agendar", "Urgente", "Sem perfil", "Plano de saúde") e clique em Adicionar.<br/>
+<b>Marcar no lead:</b> abra a ficha do lead → aba <HKey>Dados</HKey> → clique nas etiquetas desejadas (pode marcar várias; salva sozinho).<br/>
+<b>Filtrar:</b> no topo do Pipeline, use o seletor <HKey>Todas etiquetas</HKey> para ver só os leads de uma etiqueta.
+</HStep>
+:<HStep n={5} title="Pontuação, MQL e SQL — como o CRM qualifica sozinho">
+Cada lead que preenche o formulário recebe uma <b>pontuação automática</b> (aparece como <HKey>6k</HKey>, <HKey>12k</HKey>... no cartão).<br/>
+• <b style={{color:"#047857"}}>MQL</b> — pontuação acima do mínimo definido em <HKey>Config</HKey> → Pontuação MQL. Automático.<br/>
+• <b style={{color:"#1D4ED8"}}>SQL</b> — você arrastou o lead para <HKey>Qualificado</HKey> ou além. Manual.<br/>
+Dentro da ficha, use a aba <HKey>BANT</HKey> para registrar Budget, Autoridade, Necessidade e Urgência na conversa de qualificação — e a aba <HKey>Respostas</HKey> mostra tudo que o lead preencheu no formulário. Você também pode usar <b>etiquetas</b> (Config → Etiquetas de Lead) para marcações extras.
+</HStep>}
+
+<HStep n={6} title={isClinica?"Registrar fechamento (valor do tratamento)":"Registrar a venda"}>
+Quando {isClinica?"o paciente fechar o tratamento":"a venda acontecer"}: abra a ficha → aba <HKey>Dados</HKey> → preencha <HKey>Valor</HKey> e <HKey>Cash Collect</HKey> (quanto entrou de fato) → arraste o cartão para <HKey>Fechado</HKey>. Esses valores alimentam o Dashboard, o Analytics e o evento de compra enviado ao Facebook.
+</HStep>
+
+<HStep n={7} title="Conectar o WhatsApp da equipe">
+Em <HKey>Config</HKey> → seção <b>WhatsApp da Equipe</b> → clique em <HKey>Conectar</HKey> ao lado do atendente → abra o WhatsApp no celular dele → <b>Aparelhos conectados</b> → <b>Conectar aparelho</b> → escaneie o QR code que aparece na tela. Depois disso, todas as conversas aparecem dentro do CRM.
+</HStep>
+
+<Card style={{padding:"16px 20px",background:"var(--gold-bg)",borderColor:"var(--gold-border)"}}><div style={{fontSize:12.5,color:TEXT2,lineHeight:1.7}}><b style={{color:GOLD}}>Resumo de ouro:</b> responda em minutos, converse pelo Chat do CRM, {isClinica?"etiquete cada lead":"acompanhe a pontuação"} e <b>mova o cartão na hora certa</b>. Funil atualizado = Facebook aprendendo com dados reais = mais {isClinica?"pacientes":"clientes"} pagando menos por lead.</div></Card>
+</div>;}
+
 function ConfigPage({equipe,eqLoading,addMember,removeMember,toggleActive,updateDist,config,theme,toggleTheme,pipeHook,etiquetasHook,isClinica,showConfirm}){const[tagName,sTagName]=useState("");const[tagColor,sTagColor]=useState("#0D9488");const[show,sShow]=useState(false);const[fn,sFn]=useState("");const[fp,sFp]=useState("sdr");const[ft,sFt]=useState("");const[fe,sFe]=useState("");const[fc,sFc]=useState(TEAM_COLORS[0]);const[connectingId,sConnectingId]=useState(null);const[qrImg,sQrImg]=useState(null);const[qrLoading,sQrLoading]=useState(false);const IS={width:"100%",padding:"8px 12px",borderRadius:8,border:`1px solid ${BORDER}`,background:BG3,color:TEXT1,fontSize:13,outline:"none"};
 const wahaManage=async(action,session)=>{const r=await fetch("https://n8n-production-2afe.up.railway.app/webhook/waha-manage",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({action,session})});return r.json();};
 const connectWha=async(member)=>{const session=member.nome.toLowerCase().replace(/\s+/g,"-").replace(/[^a-z0-9-]/g,"");sConnectingId(member.id);sQrLoading(true);sQrImg(null);
@@ -508,6 +571,7 @@ return<ThemeCtx.Provider value={theme}><div data-theme={theme} className="flex" 
 {page==="analytics"&&(ll?<Spinner/>:<AnalyticsPage leads={filteredLeads} config={config} adsTotals={adsTotals} stages={STAGES} qualStages={QUAL_STAGES} agendStages={AGEND_STAGES}/>)}
 {page==="tracking"&&(el?<Spinner/>:<TrackingPage eventos={eventos}/>)}
 {page==="templates"&&<TemplatesPage templates={templates} loading={tl} addTemplate={addTemplate} removeTemplate={removeTemplate}/>}
+{page==="ajuda"&&<HelpPage isClinica={isClinica}/>}
 {page==="config"&&<ConfigPage equipe={equipe} eqLoading={eql} addMember={addMember} removeMember={removeMember} toggleActive={toggleActive} updateDist={updateDist} config={config} theme={theme} toggleTheme={toggleTheme} pipeHook={pipeHook} etiquetasHook={etiquetasHook} isClinica={isClinica} showConfirm={showConfirm}/>}
 </div>
 </main>
