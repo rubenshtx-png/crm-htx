@@ -1,4 +1,4 @@
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import { flushSync } from "react-dom";
 import { Filter, Loader2, RefreshCw, Sun, Moon } from "lucide-react";
 import { GOLD, BG, TEXT1, GOLD_HEX, EASE, THEME_CSS, ThemeCtx, getQualKeys, getAgendKeys, NAV, playBeep, GOLD_DIM, GOLD_BG, GOLD_BG2, BG2, BG3, BORDER, BORDER2, TEXT3 } from "./lib/constants";
@@ -23,6 +23,7 @@ const pipeHook=usePipelines(cid);const etiquetasHook=useEtiquetas(cid);const isC
 const audioLib=useAudioLibrary(cid);
 const funisHook=useFunis(cid);
 const[theme,sTheme]=useState(()=>{try{return localStorage.getItem("crm-theme")||"light";}catch{return"light";}});
+useEffect(()=>{try{document.documentElement.setAttribute("data-theme",theme);}catch{}},[theme]);
 const toggleTheme=()=>{const next=theme==="dark"?"light":"dark";const apply=()=>{sTheme(next);try{localStorage.setItem("crm-theme",next);}catch{}};
 document.documentElement.classList.add("theme-snap");const done=()=>setTimeout(()=>document.documentElement.classList.remove("theme-snap"),80);
 if(document.startViewTransition){const vt=document.startViewTransition(()=>flushSync(apply));vt.finished.finally(done);}else{apply();done();}};
