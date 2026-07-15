@@ -1,4 +1,5 @@
 import { useState, useEffect, useMemo, useCallback, createContext, useContext } from "react";
+import { flushSync } from "react-dom";
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, PieChart, Pie, Cell, CartesianGrid, Area, AreaChart } from "recharts";
 import { Users, UserCheck, Calendar, DollarSign, TrendingUp, Target, Phone, Filter, LayoutDashboard, Kanban, BarChart3, Radio, Settings, X, Check, AlertTriangle, Zap, Plus, Trash2, Eye, EyeOff, Award, Loader2, RefreshCw, Search, MessageSquare, Clock, Copy, ArrowRightLeft, Sun, Moon, Mic, GripVertical } from "lucide-react";
 import { supabase } from "./lib/supabase";
@@ -11,6 +12,11 @@ const EASE="cubic-bezier(0.16,1,0.3,1)";
 const THEME_CSS=`
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500&display=swap');
 [data-theme="dark"]{--gold:#2DD4BF;--gold-light:#5EEAD4;--gold-dim:#14B8A6;--gold-bg:rgba(45,212,191,0.08);--gold-bg2:rgba(45,212,191,0.15);--gold-border:rgba(45,212,191,0.25);--bg:#0A1514;--bg2:#101F1D;--bg3:#0D1A18;--border:rgba(188,200,197,0.12);--border2:rgba(188,200,197,0.25);--text1:#EDF4F3;--text2:#BCC8C5;--text3:#8A9997;--overlay:rgba(10,21,20,0.85);--row-hover:rgba(45,212,191,0.04);--btn-text:#0A1514;--bg-hover:#16302C;--glass:rgba(16,31,29,0.7);}
+html.theme-snap *,html.theme-snap *::before,html.theme-snap *::after{transition:none!important;}
+::view-transition-old(root){animation:vtOut 360ms cubic-bezier(0.4,0,0.2,1) both;}
+::view-transition-new(root){animation:vtIn 360ms cubic-bezier(0.4,0,0.2,1) both;}
+@keyframes vtOut{from{opacity:1}to{opacity:0}}
+@keyframes vtIn{from{opacity:0}to{opacity:1}}
 [data-theme="light"]{--gold:#0D9488;--gold-light:#14B8A6;--gold-dim:#0F766E;--gold-bg:rgba(13,148,136,0.07);--gold-bg2:rgba(13,148,136,0.12);--gold-border:rgba(13,148,136,0.3);--bg:#E9EEED;--bg2:#FFFFFF;--bg3:#F0F4F3;--border:rgba(13,60,55,0.13);--border2:rgba(13,60,55,0.24);--text1:#10211F;--text2:#38504B;--text3:#61756F;--overlay:rgba(18,42,39,0.4);--row-hover:rgba(13,148,136,0.05);--btn-text:#FFFFFF;--bg-hover:#E2E9E7;--glass:rgba(255,255,255,0.8);}
 `;
 const ThemeCtx=createContext("light");
@@ -442,7 +448,9 @@ const pipeHook=usePipelines(cid);const STAGES=pipeHook.stages;const QUAL_STAGES=
 const audioLib=useAudioLibrary(cid);
 const funisHook=useFunis(cid);
 const[theme,sTheme]=useState(()=>{try{return localStorage.getItem("crm-theme")||"light";}catch{return"light";}});
-const toggleTheme=()=>{const next=theme==="dark"?"light":"dark";sTheme(next);try{localStorage.setItem("crm-theme",next);}catch{}};
+const toggleTheme=()=>{const next=theme==="dark"?"light":"dark";const apply=()=>{sTheme(next);try{localStorage.setItem("crm-theme",next);}catch{}};
+document.documentElement.classList.add("theme-snap");const done=()=>setTimeout(()=>document.documentElement.classList.remove("theme-snap"),80);
+if(document.startViewTransition){const vt=document.startViewTransition(()=>flushSync(apply));vt.finished.finally(done);}else{apply();done();}};
 const today=new Date();const thirtyAgo=new Date(today.getFullYear(),today.getMonth(),today.getDate()-30);
 const[dateFrom,sDateFrom]=useState(thirtyAgo.toISOString().split("T")[0]);const[dateTo,sDateTo]=useState(today.toISOString().split("T")[0]);const[showDates,sShowDates]=useState(false);
 const{totals:adsTotals}=useAdsSpend(dateFrom,dateTo,cid);
