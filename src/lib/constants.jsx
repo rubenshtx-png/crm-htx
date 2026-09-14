@@ -47,6 +47,11 @@ const KANBAN_STAGES=DEFAULT_STAGES;
 const getClosedKeys=stages=>stages.filter(s=>s.key==="fechado").map(s=>s.key);
 const getQualKeys=stages=>{const qi=stages.findIndex(s=>s.key==="qualificado");return qi>=0?stages.slice(qi).map(s=>s.key):["qualificado","reuniao_agendada","reuniao_realizada","reagendamento","proposta_enviada","manter_contato","fechado"];};
 const getAgendKeys=stages=>{const ai=stages.findIndex(s=>s.key==="reuniao_agendada");return ai>=0?stages.slice(ai).map(s=>s.key):["reuniao_agendada","reuniao_realizada","reagendamento","proposta_enviada","manter_contato","fechado"];};
+// Reunião/consulta que de fato aconteceu (inclui quem já avançou depois dela) vs. quem faltou
+const REALIZADA_KEYS=["reuniao_realizada","proposta_enviada","manter_contato","fechado"];
+const NOSHOW_KEYS=["no_show"];
+// Etapas criadas pelo usuário: nomes de realizada/no-show caem nas keys fixas que o dashboard conta
+const stageKeyFromLabel=label=>{const n=label.normalize("NFD").replace(/[̀-ͯ]/g,"").toLowerCase().trim();if(/no.?show|faltou|nao compareceu/.test(n))return"no_show";if(/realizad/.test(n)&&/reuniao|consulta|call|sessao|avaliacao/.test(n))return"reuniao_realizada";return n.replace(/\s+/g,"_").replace(/[^a-z0-9_]/g,"");};
 
 const NAV=[
   {key:"dashboard",label:"Dashboard",icon:LayoutDashboard},
@@ -69,4 +74,4 @@ const WA=<svg width="12" height="12" viewBox="0 0 24 24" fill="#25D366"><path d=
 
 
 
-export { GOLD, BG, TEXT1, GOLD_HEX, EASE, THEME_CSS, ThemeCtx, useThemeMode, TEAM_COLORS, BANT_ITEMS, DEFAULT_STAGES, KANBAN_STAGES, getClosedKeys, getQualKeys, getAgendKeys, NAV, fmt, pct, timeAgo, isInactive, playBeep, bantBadge, WA, GOLD_LIGHT, GOLD_DIM, GOLD_BG, GOLD_BG2, BG2, BG3, BORDER, BORDER2, TEXT2, TEXT3 };
+export { GOLD, BG, TEXT1, GOLD_HEX, EASE, THEME_CSS, ThemeCtx, useThemeMode, TEAM_COLORS, BANT_ITEMS, DEFAULT_STAGES, KANBAN_STAGES, getClosedKeys, getQualKeys, getAgendKeys, REALIZADA_KEYS, NOSHOW_KEYS, stageKeyFromLabel, NAV, fmt, pct, timeAgo, isInactive, playBeep, bantBadge, WA, GOLD_LIGHT, GOLD_DIM, GOLD_BG, GOLD_BG2, BG2, BG3, BORDER, BORDER2, TEXT2, TEXT3 };

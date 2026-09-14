@@ -1,6 +1,6 @@
 import { useState, useEffect, useMemo, useCallback } from "react";
 import { supabase } from "./supabase";
-import { DEFAULT_STAGES, pct } from "./constants";
+import { DEFAULT_STAGES, pct, stageKeyFromLabel } from "./constants";
 
 // ===== HOOKS =====
 function useAuth(){
@@ -52,11 +52,14 @@ const addPipeline=async(nome)=>{const{data,error}=await supabase.from("crm_pipel
 const deletePipeline=async(id)=>{await supabase.from("crm_pipelines").delete().eq("id",id);setPipelines(p=>p.filter(x=>x.id!==id));if(activePipelineId===id&&pipelines.length>1){const next=pipelines.find(x=>x.id!==id);if(next)selectPipeline(next.id);}};
 const renamePipeline=async(id,nome)=>{await supabase.from("crm_pipelines").update({nome}).eq("id",id);setPipelines(p=>p.map(x=>x.id===id?{...x,nome}:x));};
 const duplicatePipeline=async(sourceId,newName)=>{const pip=await addPipeline(newName);if(!pip)return;const{data:srcStages}=await supabase.from("crm_pipeline_stages").select("*").eq("pipeline_id",sourceId).order("ordem");if(srcStages){const inserts=srcStages.map(s=>({pipeline_id:pip.id,key:s.key,label:s.label,color:s.color,ordem:s.ordem}));await supabase.from("crm_pipeline_stages").insert(inserts);}return pip;};
-const addStage=async(pipelineId,label,color)=>{const key=label.toLowerCase().replace(/\s+/g,"_").replace(/[^a-z0-9_]/g,"");const maxOrdem=stages.reduce((m,s)=>Math.max(m,s.ordem||0),0);const{data,error}=await supabase.from("crm_pipeline_stages").insert({pipeline_id:pipelineId,key,label,color,ordem:maxOrdem+1}).select();if(!error&&data)setStages(p=>[...p,data[0]]);};
+const addStage=async(pipelineId,label,color)=>{const key=stageKeyFromLabel(label);const maxOrdem=stages.reduce((m,s)=>Math.max(m,s.ordem||0),0);const{data,error}=await supabase.from("crm_pipeline_stages").insert({pipeline_id:pipelineId,key,label,color,ordem:maxOrdem+1}).select();if(!error&&data)setStages(p=>[...p,data[0]]);};
 const updateStage=async(id,updates)=>{await supabase.from("crm_pipeline_stages").update(updates).eq("id",id);setStages(p=>p.map(s=>s.id===id?{...s,...updates}:s));};
 const deleteStage=async(id)=>{await supabase.from("crm_pipeline_stages").delete().eq("id",id);setStages(p=>p.filter(s=>s.id!==id));};
 const reorderStages=async(fromIdx,toIdx)=>{const arr=[...stages];const[moved]=arr.splice(fromIdx,1);arr.splice(toIdx,0,moved);const updated=arr.map((s,i)=>({...s,ordem:i}));setStages(updated);for(const s of updated){await supabase.from("crm_pipeline_stages").update({ordem:s.ordem}).eq("id",s.id);}};
-return{pipelines,stages,activePipelineId,loading,selectPipeline,addPipeline,deletePipeline,renamePipeline,duplicatePipeline,addStage,updateStage,deleteStage,reorderStages};}
+const ensureMeetingStages=async(pipelineId,isClinica)=>{const w=isClinica?"Consulta":"Reunião";const need=[{key:"reuniao_realizada",label:`${w} Realizada`,color:"#818CF8"},{key:"no_show",label:"No Show",color:"#FBBF24"}].filter(n=>!stages.some(s=>s.key===n.key));if(!need.length)return 0;
+const{data,error}=await supabase.from("crm_pipeline_stages").insert(need.map(n=>({pipeline_id:pipelineId,...n,ordem:0}))).select();if(error||!data)return -1;
+const ai=stages.findIndex(s=>s.key==="reuniao_agendada");const pos=ai>=0?ai+1:stages.length;const added=need.map(n=>data.find(d=>d.key===n.key)).filter(Boolean);const arr=[...stages];arr.splice(pos,0,...added);const updated=arr.map((s,i)=>({...s,ordem:i}));setStages(updated);for(const s of updated){await supabase.from("crm_pipeline_stages").update({ordem:s.ordem}).eq("id",s.id);}return added.length;};
+return{pipelines,stages,activePipelineId,loading,selectPipeline,addPipeline,deletePipeline,renamePipeline,duplicatePipeline,addStage,updateStage,deleteStage,reorderStages,ensureMeetingStages};}
 
 function useAudioLibrary(cid){const[items,setItems]=useState([]);const[loading,setLoading]=useState(true);
 useEffect(()=>{if(!cid)return;(async()=>{const{data}=await supabase.from("crm_audio_library").select("*").eq("ativo",true).order("categoria").order("ordem");if(data)setItems(data);setLoading(false);})();},[cid]);
