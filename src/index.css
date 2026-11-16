@@ -8,24 +8,15 @@
   box-sizing: border-box;
 }
 
+/* Fundo e fonte antes do React montar (evita piscar branco/preto). Tokens completos em THEME_CSS. */
 body {
-  font-family: 'DM Sans', system-ui, sans-serif;
-  background: #09090B;
-  color: #FAFAF9;
+  font-family: 'Geist', system-ui, -apple-system, 'Segoe UI', sans-serif;
+  background: #F4F2EE;
+  color: #1A1714;
   -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
-
-::-webkit-scrollbar {
-  width: 6px;
-  height: 6px;
-}
-::-webkit-scrollbar-track {
-  background: transparent;
-}
-::-webkit-scrollbar-thumb {
-  background: rgba(201,168,76,0.15);
-  border-radius: 3px;
-}
-::-webkit-scrollbar-thumb:hover {
-  background: rgba(201,168,76,0.3);
+html[data-theme="dark"] body {
+  background: #0E0D0B;
+  color: #EDE8E0;
 }

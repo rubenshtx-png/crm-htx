@@ -5,27 +5,30 @@ import { UserCheck, LayoutDashboard, Kanban, BarChart3, Radio, Settings, Message
 const GOLD="var(--gold)",GOLD_LIGHT="var(--gold-light)",GOLD_DIM="var(--gold-dim)",GOLD_BG="var(--gold-bg)",GOLD_BG2="var(--gold-bg2)";
 const BG="var(--bg)",BG2="var(--bg2)",BG3="var(--bg3)",BORDER="var(--border)",BORDER2="var(--border2)";
 const TEXT1="var(--text1)",TEXT2="var(--text2)",TEXT3="var(--text3)";
-const GOLD_HEX="#14B8A6";
+// Latão médio: legível como traço/ponto de gráfico nos dois temas (texto usa GOLD, que muda por tema)
+const GOLD_HEX="#B8914A";
 const EASE="cubic-bezier(0.16,1,0.3,1)";
+// Identidade "tinta e latão": neutros quentes + um único acento (ação e dinheiro).
+// Contraste: texto/acento >= 4.5:1 sobre bg e bg2 nos dois temas.
 const THEME_CSS=`
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500&display=swap');
-[data-theme="dark"]{--gold:#2DD4BF;--gold-light:#5EEAD4;--gold-dim:#14B8A6;--gold-bg:rgba(45,212,191,0.08);--gold-bg2:rgba(45,212,191,0.15);--gold-border:rgba(45,212,191,0.25);--bg:#0A1514;--bg2:#101F1D;--bg3:#0D1A18;--border:rgba(188,200,197,0.12);--border2:rgba(188,200,197,0.25);--text1:#EDF4F3;--text2:#BCC8C5;--text3:#8A9997;--overlay:rgba(10,21,20,0.85);--row-hover:rgba(45,212,191,0.04);--btn-text:#0A1514;--bg-hover:#16302C;--glass:rgba(16,31,29,0.7);}
+:root{--font-ui:'Geist',system-ui,-apple-system,'Segoe UI',sans-serif;--font-display:'Instrument Serif',Georgia,'Times New Roman',serif;--font-mono:'Geist Mono',ui-monospace,'SFMono-Regular',monospace;--radius:12px;}
+[data-theme="light"]{--gold:#8C5E14;--gold-light:#B07A22;--gold-dim:#6E4A10;--gold-bg:rgba(140,94,20,0.07);--gold-bg2:rgba(140,94,20,0.12);--gold-border:rgba(140,94,20,0.32);--accent-rgb:140,94,20;--neutral-rgb:111,103,94;--ink-rgb:31,27,22;--bg:#F4F2EE;--bg2:#FFFFFF;--bg3:#FAF9F6;--sidebar:#FBFAF8;--border:rgba(31,27,22,0.09);--border2:rgba(31,27,22,0.17);--text1:#1A1714;--text2:#4A443D;--text3:#6F675E;--overlay:rgba(26,23,20,0.42);--row-hover:rgba(140,94,20,0.045);--btn-text:#FFFFFF;--bg-hover:#EFECE6;--glass:rgba(255,255,255,0.86);--shadow-sm:0 1px 2px rgba(20,17,14,0.05),0 1px 1px rgba(20,17,14,0.03);--shadow-md:0 12px 32px rgba(20,17,14,0.12),0 2px 6px rgba(20,17,14,0.05);}
+[data-theme="dark"]{--gold:#D9B26A;--gold-light:#E8CB8F;--gold-dim:#B8914A;--gold-bg:rgba(217,178,106,0.08);--gold-bg2:rgba(217,178,106,0.15);--gold-border:rgba(217,178,106,0.30);--accent-rgb:217,178,106;--neutral-rgb:189,181,169;--ink-rgb:237,230,218;--bg:#0E0D0B;--bg2:#171512;--bg3:#12110F;--sidebar:#12110F;--border:rgba(237,230,218,0.08);--border2:rgba(237,230,218,0.16);--text1:#EDE8E0;--text2:#BDB5A9;--text3:#8F877C;--overlay:rgba(8,7,6,0.78);--row-hover:rgba(217,178,106,0.05);--btn-text:#14120F;--bg-hover:#221F1A;--glass:rgba(23,21,18,0.78);--shadow-sm:0 1px 2px rgba(0,0,0,0.45);--shadow-md:0 16px 40px rgba(0,0,0,0.55),0 2px 6px rgba(0,0,0,0.3);}
 html.theme-snap *,html.theme-snap *::before,html.theme-snap *::after{transition:none!important;}
 ::view-transition-old(root){animation:vtOut 360ms cubic-bezier(0.4,0,0.2,1) both;}
 ::view-transition-new(root){animation:vtIn 360ms cubic-bezier(0.4,0,0.2,1) both;}
 @keyframes vtOut{from{opacity:1}to{opacity:0}}
 @keyframes vtIn{from{opacity:0}to{opacity:1}}
-[data-theme="light"]{--gold:#0D9488;--gold-light:#14B8A6;--gold-dim:#0F766E;--gold-bg:rgba(13,148,136,0.07);--gold-bg2:rgba(13,148,136,0.12);--gold-border:rgba(13,148,136,0.3);--bg:#E9EEED;--bg2:#FFFFFF;--bg3:#F0F4F3;--border:rgba(13,60,55,0.13);--border2:rgba(13,60,55,0.24);--text1:#10211F;--text2:#38504B;--text3:#61756F;--overlay:rgba(18,42,39,0.4);--row-hover:rgba(13,148,136,0.05);--btn-text:#FFFFFF;--bg-hover:#E2E9E7;--glass:rgba(255,255,255,0.8);}
 `;
 const ThemeCtx=createContext("light");
 function useThemeMode(){return useContext(ThemeCtx);}
-const TEAM_COLORS=["#14B8A6","#60A5FA","#34D399","#F472B6","#A78BFA","#FB923C","#22D3EE","#F87171","#84CC16","#E879F9"];
+const TEAM_COLORS=["#B8914A","#60A5FA","#34D399","#F472B6","#A78BFA","#FB923C","#22D3EE","#F87171","#84CC16","#E879F9"];
 
 const BANT_ITEMS=[
-  {key:"budget",label:"Budget",desc:"Tem condição de investir no tratamento?"},
-  {key:"authority",label:"Authority",desc:"É quem decide pelo tratamento?"},
-  {key:"need",label:"Need",desc:"Tem a queixa/necessidade real?"},
-  {key:"timeline",label:"Timeline",desc:"Tem urgência para iniciar?"}
+  {key:"budget",label:"Budget",desc:"Tem condição de investir?"},
+  {key:"authority",label:"Authority",desc:"É quem decide a compra?"},
+  {key:"need",label:"Need",desc:"Tem a dor ou necessidade real?"},
+  {key:"timeline",label:"Timeline",desc:"Tem urgência para começar?"}
 ];
 
 const DEFAULT_STAGES=[
@@ -34,11 +37,11 @@ const DEFAULT_STAGES=[
   {key:"contato_iniciado",label:"Contato Iniciado",color:"#60A5FA"},
   {key:"conversando",label:"Conversando",color:"#38BDF8"},
   {key:"qualificado",label:"Qualificado",color:"#34D399"},
-  {key:"reuniao_agendada",label:"Consulta Agendada",color:"#A78BFA"},
-  {key:"reuniao_realizada",label:"Consulta Realizada",color:"#818CF8"},
+  {key:"reuniao_agendada",label:"Reunião Agendada",color:"#A78BFA"},
+  {key:"reuniao_realizada",label:"Reunião Realizada",color:"#818CF8"},
   {key:"no_show",label:"No Show",color:"#FBBF24"},
   {key:"reagendamento",label:"Reagendamento",color:"#FB923C"},
-  {key:"proposta_enviada",label:"Orçamento Enviado",color:"#22D3EE"},
+  {key:"proposta_enviada",label:"Proposta Enviada",color:"#22D3EE"},
   {key:"manter_contato",label:"Manter Contato",color:"#94A3B8"},
   {key:"fechado",label:"Fechado",color:"#4ADE80"}
 ];
